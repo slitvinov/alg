@@ -1,8 +1,7 @@
 PREFIX = $(HOME)
-HE_CFLAGS = -Wall -Wextra -O2 -g
+ALG_CFLAGS = -Wall -Wextra -O2 -g
 
-H =
-I =
+H = alg/min.h
 TRG = alg
 L = libalg_s.a libalg_d.a
 
