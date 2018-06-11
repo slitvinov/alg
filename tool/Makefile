@@ -1,0 +1,18 @@
+PREFIX = $(HOME)
+S = ..
+
+B = $(PREFIX)/bin
+P = alg
+
+M = conf util
+
+include $S/make/tool.mk
+conf: conf.in
+	sed "s,@PREFIX@,$(PREFIX),g" $< > $@
+	chmod +x $@
+
+test: install; atest test/*
+
+clean:; rm -f conf
+
+.PHONY: clean install test
