@@ -8,7 +8,7 @@ enum {STEEPEST_DESCENT};
 typedef int (*AlgMinF )(int n, real *xx, real *yy, real *zz, void *param, /**/ real *E);
 typedef int (*AlgMinDF)(int n, real *xx, real *yy, real *zz, void *param, /**/ real *fx, real *fy, real *fz);
 
-int alg_min_ini(int type, AlgMinF*, AlgMinDF*, int n /**/ T**);
+int alg_min_ini(int type, AlgMinF*, AlgMinDF*, int n, /**/ T**);
 int alg_min_fin(T*);
 
 int alg_min_iterate(T*);
