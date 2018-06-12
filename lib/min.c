@@ -14,6 +14,7 @@
 struct T {
     int n;
     gsl_multimin_fdfminimizer *min;
+    gsl_multimin_function_fdf func;
 
     HeReal *position, *force;
 
@@ -30,7 +31,6 @@ static double f(const gsl_vector *v, void *vq) {
     n = q->n;
 
     position = he_real_from(q->position, v->data);
-
     x = position; y = position + n; z = position + 2*n;
     return (*q->f)(n, x, y, z, q->param);
 }
@@ -44,15 +44,13 @@ static void df(const gsl_vector *v, void *vq, gsl_vector *df) {
     n = q->n;
 
     position = he_real_from(q->position, v->data);
-
     x = position; y = position + n; z = position + 2*n;
-    MSG("x[0 and 1]: %g %g", x[0], x[1]);
+
     force = he_real_from(q->force, df->data);
-    MSG("x[0 and 1]: %g %g", x[0], x[1]);
-
     fx = force; fy = force + n; fz = force + 2*n;
-
     (*q->df)(n, x, y, z, q->param, /**/ fx, fy, fz);
+
+    df->data = he_real_to(q->force, force);
 }
 
 static void fdf(const gsl_vector *x, void *params, double *f0, gsl_vector *df0) {
@@ -66,7 +64,6 @@ int alg_min_ini(int __UNUSED itype, AlgMinF f0, AlgMinDF df0, void *param,
     double tol, step_size;
     int i, j;
     const gsl_multimin_fdfminimizer_type *type;
-    gsl_multimin_function_fdf func;
     gsl_vector *position;
 
     type = gsl_multimin_fdfminimizer_steepest_descent;
@@ -81,11 +78,11 @@ int alg_min_ini(int __UNUSED itype, AlgMinF f0, AlgMinDF df0, void *param,
     q->df = df0;
     q->param = param;
 
-    func.n = 3*n;
-    func.f = f;
-    func.df = df;
-    func.fdf = fdf;
-    func.params = q;
+    q->func.n = 3*n;
+    q->func.f = f;
+    q->func.df = df;
+    q->func.fdf = fdf;
+    q->func.params = q;
 
     for (i = j = 0; i < n; i++) {
         gsl_vector_set(position, j++, xx[i]);
@@ -93,16 +90,17 @@ int alg_min_ini(int __UNUSED itype, AlgMinF f0, AlgMinDF df0, void *param,
         gsl_vector_set(position, j++, zz[i]);
     }
     q->min = gsl_multimin_fdfminimizer_alloc(type, 3*n);
-    gsl_multimin_fdfminimizer_set(q->min, &func,
+    gsl_multimin_fdfminimizer_set(q->min, &q->func,
                                   position, step_size = 0.01, tol = 0.1);
     *pq = q;
+    gsl_vector_free(position);
     return HE_OK;
 }
 
 int alg_min_fin(T *q) {
     gsl_multimin_fdfminimizer_free(q->min);
     he_real_fin(q->position);
-    he_real_fin(q->force);    
+    he_real_fin(q->force);
     FREE(q);
     return HE_OK;
 }
@@ -120,7 +118,7 @@ int alg_min_force(T *q, real **pfx, real **pfy, real **pfz)
 
     v = gsl_multimin_fdfminimizer_gradient(q->min);
     force = he_real_from(q->force, v->data);
-    
+
     fx = force; fy = force + n; fz = force + 2*n;
 
     *pfx = fx; *pfy = fy; *pfz = fz;
@@ -135,7 +133,7 @@ int alg_min_position(T *q, /**/ real **px, real **py, real **pz) {
     n = q->n;
     v = gsl_multimin_fdfminimizer_x(q->min);
     position = he_real_from(q->position, v->data);
-    
+
     x = position; y = position + n; z = position + 2*n;
     *px = x; *py = y; *pz = z;
     return HE_OK;
@@ -146,5 +144,5 @@ real alg_min_energy(T *q) {
 }
 
 int alg_min_test_force(T *q, real eps) {
-    return gsl_multimin_test_gradient (q->min->gradient, eps);
+    return GSL_SUCCESS == gsl_multimin_test_gradient (q->min->gradient, eps);
 }

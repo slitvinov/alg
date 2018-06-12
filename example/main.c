@@ -36,13 +36,21 @@ void df(int n,
 
 int main(void) {
     int i;
+    real eps;
+
     for (i = 0; i < N; i++)
         xx[i] = yy[i] = zz[i] = 1.0;
     alg_min_ini(STEEPEST_DESCENT, f, df, NULL, N, xx, yy, zz, &min);
 
-//    for (i = 0; i < 10; i++)
-//        alg_min_iterate(min);
-    
+
+    eps = 1e-3;
+
+    for (;;) {
+        if (alg_min_test_force(min, eps)) break;
+        alg_min_iterate(min);
+        printf("E = %g\n", alg_min_energy(min));
+    }
+
     alg_min_fin(min);
     return 0;
 }
