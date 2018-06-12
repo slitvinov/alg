@@ -40,8 +40,10 @@ static void df(const gsl_vector *v, void *vq, gsl_vector *df) {
     n = q->n;
     position = he_real_from(q->real, v->data);
     x = position; y = position + n; z = position + 2*n;
-
+    MSG("x[0 and 1]: %g %g", x[0], x[1]);
     force = he_real_from(q->real, df->data);
+    MSG("x[0 and 1]: %g %g", x[0], x[1]);
+    
     fx = force; fy = force + n; fz = force + 2*n;
 
     (*q->df)(n, x, y, z, q->param, /**/ fx, fy, fz);

@@ -38,10 +38,11 @@ int main(void) {
     int i;
     for (i = 0; i < N; i++)
         xx[i] = yy[i] = zz[i] = 1.0;
+    alg_min_ini(STEEPEST_DESCENT, f, df, NULL, N, xx, yy, zz, &min);
 
-    alg_min_ini(STEEPEST_DESCENT, f, df,
-                NULL, N, xx, yy, zz, &min);
-    alg_min_iterate(min);
+//    for (i = 0; i < 10; i++)
+//        alg_min_iterate(min);
+    
     alg_min_fin(min);
     return 0;
 }
