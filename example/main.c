@@ -41,6 +41,7 @@ int main(void) {
 
     alg_min_ini(STEEPEST_DESCENT, f, df,
                 NULL, N, xx, yy, zz, &min);
+    alg_min_iterate(min);
     alg_min_fin(min);
     return 0;
 }
