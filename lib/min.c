@@ -58,7 +58,7 @@ static void fdf(const gsl_vector *x, void *params, double *f0, gsl_vector *df0) 
     df(x, params, df0);
 }
 
-int alg_min_ini(int __UNUSED itype, AlgMinF f0, AlgMinDF df0, void *param,
+int alg_min_ini(int itype, AlgMinF f0, AlgMinDF df0, void *param,
                 int n, real *xx, real *yy, real *zz, /**/ T **pq) {
     T *q;
     double tol, step_size;
@@ -66,7 +66,15 @@ int alg_min_ini(int __UNUSED itype, AlgMinF f0, AlgMinDF df0, void *param,
     const gsl_multimin_fdfminimizer_type *type;
     gsl_vector *position;
 
-    type = gsl_multimin_fdfminimizer_steepest_descent;
+    switch (itype) {
+    case CONJUGATE_FR: type = gsl_multimin_fdfminimizer_conjugate_fr; break;
+    case CONJUGATE_PR: type = gsl_multimin_fdfminimizer_conjugate_pr; break;
+    case VECTOR_BFGS2: type = gsl_multimin_fdfminimizer_vector_bfgs2; break;
+    case VECTOR_BFGS: type = gsl_multimin_fdfminimizer_vector_bfgs; break;
+    case STEEPEST_DESCENT: type = gsl_multimin_fdfminimizer_steepest_descent; break;
+    default: ERR(HE_INDEX, "wrong algorithm type = %d", itype);
+    }
+
     MALLOC(1, &q);
 
     position = gsl_vector_alloc(3*n);
