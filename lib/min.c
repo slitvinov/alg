@@ -14,7 +14,9 @@
 struct T {
     int n;
     gsl_multimin_fdfminimizer *min;
-    HeReal *real;
+
+    HeReal *position, *force;
+
     AlgMinF f;
     AlgMinDF df;
     void *param;
@@ -26,7 +28,9 @@ static double f(const gsl_vector *v, void *vq) {
     const real *position, *x, *y, *z;
     q = (T*)vq;
     n = q->n;
-    position = he_real_from(q->real, v->data);
+
+    position = he_real_from(q->position, v->data);
+
     x = position; y = position + n; z = position + 2*n;
     return (*q->f)(n, x, y, z, q->param);
 }
@@ -38,12 +42,14 @@ static void df(const gsl_vector *v, void *vq, gsl_vector *df) {
     real *force, *fx, *fy, *fz;
     q = (T*)vq;
     n = q->n;
-    position = he_real_from(q->real, v->data);
+
+    position = he_real_from(q->position, v->data);
+
     x = position; y = position + n; z = position + 2*n;
     MSG("x[0 and 1]: %g %g", x[0], x[1]);
-    force = he_real_from(q->real, df->data);
+    force = he_real_from(q->force, df->data);
     MSG("x[0 and 1]: %g %g", x[0], x[1]);
-    
+
     fx = force; fy = force + n; fz = force + 2*n;
 
     (*q->df)(n, x, y, z, q->param, /**/ fx, fy, fz);
@@ -67,7 +73,8 @@ int alg_min_ini(int __UNUSED itype, AlgMinF f0, AlgMinDF df0, void *param,
     MALLOC(1, &q);
 
     position = gsl_vector_alloc(3*n);
-    he_real_ini(3*n, &q->real);
+    he_real_ini(3*n, &q->position);
+    he_real_ini(3*n, &q->force);
 
     q->n = n;
     q->f = f0;
@@ -94,7 +101,8 @@ int alg_min_ini(int __UNUSED itype, AlgMinF f0, AlgMinDF df0, void *param,
 
 int alg_min_fin(T *q) {
     gsl_multimin_fdfminimizer_free(q->min);
-    he_real_fin(q->real);
+    he_real_fin(q->position);
+    he_real_fin(q->force);    
     FREE(q);
     return HE_OK;
 }
@@ -111,7 +119,8 @@ int alg_min_force(T *q, real **pfx, real **pfy, real **pfz)
     n = q->n;
 
     v = gsl_multimin_fdfminimizer_gradient(q->min);
-    force = he_real_from(q->real, v->data);
+    force = he_real_from(q->force, v->data);
+    
     fx = force; fy = force + n; fz = force + 2*n;
 
     *pfx = fx; *pfy = fy; *pfz = fz;
@@ -125,7 +134,8 @@ int alg_min_position(T *q, /**/ real **px, real **py, real **pz) {
     gsl_vector *v;
     n = q->n;
     v = gsl_multimin_fdfminimizer_x(q->min);
-    position = he_real_from(q->real, v->data);
+    position = he_real_from(q->position, v->data);
+    
     x = position; y = position + n; z = position + 2*n;
     *px = x; *py = y; *pz = z;
     return HE_OK;
