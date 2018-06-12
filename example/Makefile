@@ -1,5 +1,5 @@
 M = main
-PREC = s
+PREC = d
 ALG_CFLGAS = -Wall -Wextra -O0 -g `alg.conf --cflags $(PREC)`
 ALG_LDFLAGS = `alg.conf --libs $(PREC)`
 
