@@ -17,6 +17,6 @@ int  alg_min_force   (T*, /**/ real**, real**, real**);
 int  alg_min_position(T*, /**/ real**, real**, real**);
 real alg_min_energy(T*);
 
-int alg_min_test_force(T*, real eps);
+int alg_min_end(T*);
 
 #undef T

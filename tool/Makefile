@@ -11,7 +11,7 @@ conf: conf.in
 	sed "s,@PREFIX@,$(PREFIX),g" $< > $@
 	chmod +x $@
 
-test: install; atest test/*
+test: install
 
 clean:; rm -f conf
 

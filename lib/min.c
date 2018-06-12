@@ -143,6 +143,8 @@ real alg_min_energy(T *q) {
     return gsl_multimin_fdfminimizer_minimum(q->min);
 }
 
-int alg_min_test_force(T *q, real eps) {
+int alg_min_end(T *q) {
+    real eps;
+    eps = 1e-6;
     return GSL_SUCCESS == gsl_multimin_test_gradient (q->min->gradient, eps);
 }

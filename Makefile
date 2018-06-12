@@ -1,4 +1,4 @@
-D = tool pkgconfig
+D = tool pkgconfig example
 
 install: dir
 test: dir
