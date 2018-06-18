@@ -45,7 +45,6 @@ int main(void) {
         alg_min_iterate(min);
         printf("%g\n", alg_min_energy(min));
     }
-
     alg_min_fin(min);
     return 0;
 }

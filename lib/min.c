@@ -92,11 +92,11 @@ int alg_min_ini(int itype, AlgMinF f0, AlgMinDF df0, void *param,
     q->func.fdf = fdf;
     q->func.params = q;
 
-    for (i = j = 0; i < n; i++) {
-        gsl_vector_set(position, j++, xx[i]);
-        gsl_vector_set(position, j++, yy[i]);
-        gsl_vector_set(position, j++, zz[i]);
-    }
+    j = 0;
+    for (i = 0; i < n; i++) gsl_vector_set(position, j++, xx[i]);
+    for (i = 0; i < n; i++) gsl_vector_set(position, j++, yy[i]);
+    for (i = 0; i < n; i++) gsl_vector_set(position, j++, zz[i]);
+
     q->min = gsl_multimin_fdfminimizer_alloc(type, 3*n);
     gsl_multimin_fdfminimizer_set(q->min, &q->func,
                                   position, step_size = 0.01, tol = 0.1);
@@ -153,6 +153,6 @@ real alg_min_energy(T *q) {
 
 int alg_min_end(T *q) {
     real eps;
-    eps = 1e-6;
+    eps = 1e-3;
     return GSL_SUCCESS == gsl_multimin_test_gradient (q->min->gradient, eps);
 }
