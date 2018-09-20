@@ -1,4 +1,4 @@
-int min_ini();
+int min_ini(int type);
 int min_fin();
 
 int min_iterate();
