@@ -39,4 +39,5 @@ int main(__UNUSED int argc, const char **argv0) {
     printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;
     printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;
     printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;
+    return HE_OK;
 }
