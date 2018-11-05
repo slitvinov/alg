@@ -8,29 +8,33 @@
 
 #include "alg/eig.h"
 
-#define NDIM (3)
+#define D (3)
+
+static real get(const gsl_matrix *m, int i, int j) { return gsl_matrix_get(m, i, j); }
 
 int alg_eig_vectors(const real *data, /**/ real e0[3], real e1[3], real e2[3]) {
-    double data_[NDIM*NDIM];
-    for (int i = 0; i < NDIM*NDIM; i++)
+    enum {X, Y, Z};
+    double data_[D*D];
+
+    for (int i = 0; i < D*D; i++)
         data_[i] = data[i];
-  
+
     gsl_matrix_view m
-        = gsl_matrix_view_array (data_, NDIM, NDIM);
-    gsl_vector *eval = gsl_vector_alloc (NDIM);
-    gsl_matrix *evec = gsl_matrix_alloc (NDIM, NDIM);
+        = gsl_matrix_view_array (data_, D, D);
+    gsl_vector *eval = gsl_vector_alloc (D);
+    gsl_matrix *evec = gsl_matrix_alloc (D, D);
     gsl_eigen_symmv_workspace * w =
-        gsl_eigen_symmv_alloc (NDIM);
+        gsl_eigen_symmv_alloc (D);
     gsl_eigen_symmv (&m.matrix, eval, evec, w);
     gsl_eigen_symmv_free (w);
     gsl_eigen_symmv_sort (eval, evec,
                           GSL_EIGEN_SORT_ABS_ASC);
 
-    e0[0] = gsl_matrix_get(evec, 0, 0); e0[1] = gsl_matrix_get(evec, 1, 0); e0[2] = gsl_matrix_get(evec, 2, 0);
-    e1[0] = gsl_matrix_get(evec, 0, 1); e1[1] = gsl_matrix_get(evec, 1, 1); e1[2] = gsl_matrix_get(evec, 2, 1);
-    e2[0] = gsl_matrix_get(evec, 0, 2); e2[1] = gsl_matrix_get(evec, 1, 2); e2[2] = gsl_matrix_get(evec, 2, 2);
+    e0[X] = get(evec, X, X); e0[Y] = get(evec, Y, X); e0[Z] = get(evec, Z, X);
+    e1[X] = get(evec, X, Y); e1[Y] = get(evec, Y, Y); e1[Z] = get(evec, Z, Y);
+    e2[X] = get(evec, X, Z); e2[Y] = get(evec, Y, Z); e2[Z] = get(evec, Z, Z);
     gsl_vector_free (eval);
     gsl_matrix_free (evec);
-    
+
     return HE_OK;
 }
