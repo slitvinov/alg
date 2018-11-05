@@ -10,12 +10,15 @@
 
 int main(void) {
     enum {X, Y, Z};
+    int i;
     real m[6] = {1, 1/2.0, 1/3.0,
                  1/3.0, 1/4.0,
                  1/5.0};
-    real a[3], b[3], c[3];
-    alg_eig_vectors(m, a, b, c);
-    printf("%g %g %g\n", a[X], a[Y], a[Z]);
-    printf("%g %g %g\n", b[X], b[Y], b[Z]);
-    printf("%g %g %g\n", c[X], c[Y], c[Z]);
+    real v[3*3];
+    alg_eig_vectors(m, v);
+
+    i = 0;
+    printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;
+    printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;
+    printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;    
 }
