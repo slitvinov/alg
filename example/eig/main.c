@@ -11,7 +11,7 @@
 static const char **argv;
 static int scl(/**/ real *p) {
     if (*argv == NULL) ER("not enough args");
-    if (sscanf(*argv, XE_REAL_IN, p) != 1)
+    if (sscanf(*argv, HE_REAL_IN, p) != 1)
         ER("not a number '%s'", *argv);
     argv++;
     return HE_OK;
