@@ -4,7 +4,7 @@
 #include <gsl/gsl_linalg.h>
 
 #include <real.h>
-#include <he/err.h>
+#include <co/err.h>
 
 #include "alg/eig.h"
 

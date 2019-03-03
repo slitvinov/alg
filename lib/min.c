@@ -2,10 +2,10 @@
 #include <gsl/gsl_multimin.h>
 
 #include <real.h>
-#include <he/err.h>
-#include <he/memory.h>
-#include <he/real.h>
-#include <he/macro.h>
+#include <co/err.h>
+#include <co/memory.h>
+#include <co/real.h>
+#include <co/macro.h>
 
 #include "alg/min.h"
 
