@@ -27,12 +27,12 @@ int min_ini(int type) {
     if (NV < 0) ER("NV < 0");
     alg_min_ini(type,
                 Energy0, Force0, NULL, NV, XX, YY, ZZ, &min);
-    return HE_OK;
+    return CO_OK;
 }
 
 int min_fin() {
     alg_min_fin(min);
-    return HE_OK;
+    return CO_OK;
 }
 
 int min_iterate() { return alg_min_iterate(min); }
@@ -46,7 +46,7 @@ int min_force(real *x, real *y, real *z) {
     for (i = 0; i < NV; i++) {
         x[i] = fx[i]; y[i] = fy[i]; z[i] = fz[i];
     }
-    return HE_OK;    
+    return CO_OK;    
 }
 
 int min_position(real *x, real *y, real *z) {
@@ -56,5 +56,5 @@ int min_position(real *x, real *y, real *z) {
     for (i = 0; i < NV; i++) {
         x[i] = fx[i]; y[i] = fy[i]; z[i] = fz[i];
     }
-    return HE_OK;
+    return CO_OK;
 }

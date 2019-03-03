@@ -72,7 +72,7 @@ int alg_min_ini(int itype, AlgMinF f0, AlgMinDF df0, void *param,
     case VECTOR_BFGS2: type = gsl_multimin_fdfminimizer_vector_bfgs2; break;
     case VECTOR_BFGS: type = gsl_multimin_fdfminimizer_vector_bfgs; break;
     case STEEPEST_DESCENT: type = gsl_multimin_fdfminimizer_steepest_descent; break;
-    default: ERR(HE_INDEX, "wrong algorithm type = %d", itype);
+    default: ERR(CO_INDEX, "wrong algorithm type = %d", itype);
     }
 
     MALLOC(1, &q);
@@ -102,7 +102,7 @@ int alg_min_ini(int itype, AlgMinF f0, AlgMinDF df0, void *param,
                                   position, step_size = 0.01, tol = 0.1);
     *pq = q;
     gsl_vector_free(position);
-    return HE_OK;
+    return CO_OK;
 }
 
 int alg_min_fin(T *q) {
@@ -110,7 +110,7 @@ int alg_min_fin(T *q) {
     he_real_fin(q->position);
     he_real_fin(q->force);
     FREE(q);
-    return HE_OK;
+    return CO_OK;
 }
 
 int alg_min_iterate(T *q) {
@@ -131,7 +131,7 @@ int alg_min_force(T *q, real **pfx, real **pfy, real **pfz)
 
     *pfx = fx; *pfy = fy; *pfz = fz;
 
-    return HE_OK;
+    return CO_OK;
 }
 
 int alg_min_position(T *q, /**/ real **px, real **py, real **pz) {
@@ -144,7 +144,7 @@ int alg_min_position(T *q, /**/ real **px, real **py, real **pz) {
 
     x = position; y = position + n; z = position + 2*n;
     *px = x; *py = y; *pz = z;
-    return HE_OK;
+    return CO_OK;
 }
 
 real alg_min_energy(T *q) {

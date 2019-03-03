@@ -14,7 +14,7 @@ static int scl(/**/ real *p) {
     if (sscanf(*argv, XE_REAL_IN, p) != 1)
         ER("not a number '%s'", *argv);
     argv++;
-    return HE_OK;
+    return CO_OK;
 }
 
 int main(__UNUSED int argc, const char **argv0) {
@@ -39,5 +39,5 @@ int main(__UNUSED int argc, const char **argv0) {
     printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;
     printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;
     printf("%g %g %g\n", v[i+X], v[i+Y], v[i+Z]); i += 3;
-    return HE_OK;
+    return CO_OK;
 }

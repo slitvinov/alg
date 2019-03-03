@@ -43,5 +43,5 @@ int alg_eig_vectors(const real A[6], /**/ real V[9]) {
     gsl_vector_free(val);
     gsl_matrix_free(vec);
     gsl_eigen_symmv_free(w);
-    return HE_OK;
+    return CO_OK;
 }
