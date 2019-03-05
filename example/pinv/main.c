@@ -8,13 +8,25 @@
 
 #include <alg/pinv.h>
 
+#define FMT CO_REAL_OUT
+
 int main(__UNUSED int argc, const char **argv) {
     AlgPinv *pinv;
-    real A[99], B[99];
-
-    int dim = 1;
-
+    real A[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    real B[99];
+    int dim, i, j, m;
+    
+    dim = 3;
     alg_pinv_ini(dim, &pinv);
     alg_pinv_apply(pinv, A, /**/ B);
+
+    for (i = m = 0; i < dim; i++) {
+        if (i > 0) puts("\n");
+        for (j = 0; j < dim; j++) {
+            if (j > 0) puts(" ");
+            printf(FMT, A[m++]);
+        }
+    }
+    
     alg_pinv_fin(pinv);
 }
