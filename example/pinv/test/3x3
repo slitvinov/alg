@@ -1,0 +1,2 @@
+# nTEST: 3x3
+./main < data/3x3 > main.out.txt
