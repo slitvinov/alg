@@ -20,32 +20,31 @@ struct T {
 
 int alg_pinv_ini(int dim, T **pq) {
     T *q;
+
+    if (dim <= 0)
+        ERR(CO_INDEX, "dim=%d <= 0", dim);
+
     MALLOC(1, &q);
     q->dim = dim;
-    if ((q->U = gsl_matrix_alloc(dim, dim)) == NULL) {
-        MSG("allocation failed for q->U");
-        return 1;
-    }
-    if ((q->V = gsl_matrix_alloc(dim, dim)) == NULL) {
-        MSG("allocation failed for q->V");
-        return 1;
-    }
-    if ((q->Sigma = gsl_matrix_calloc(dim, dim)) == NULL) { /* calloc */
-        MSG("allocation failed for q->Sigma");
-        return 1;
-    }
-    if ((q->Tmp = gsl_matrix_alloc(dim, dim)) == NULL) {
-        MSG("allocation failed for q->Tmp");
-        return 1;
-    }
-    if ((q->S = gsl_vector_alloc(dim)) == NULL) {
-        MSG("allocation failed for q->S");
-        return 1;
-    }
-    if ((q->WORK = gsl_vector_alloc(dim)) == NULL) {
-        MSG("allocation failed for q->WORK");
-        return 1;
-    }
+
+
+    if ((q->U = gsl_matrix_alloc(dim, dim)) == NULL)
+        ERR(CO_MEMORY, "allocation failed for q->U");
+
+    if ((q->V = gsl_matrix_alloc(dim, dim)) == NULL)
+        ERR(CO_MEMORY, "allocation failed for q->V");
+
+    if ((q->Sigma = gsl_matrix_calloc(dim, dim)) == NULL)/* calloc */
+        ERR(CO_MEMORY, "allocation failed for q->Sigma");
+
+    if ((q->Tmp = gsl_matrix_alloc(dim, dim)) == NULL)
+        ERR(CO_MEMORY, "allocation failed for q->Tmp");
+
+    if ((q->S = gsl_vector_alloc(dim)) == NULL)
+        ERR(CO_MEMORY, "allocation failed for q->S");
+
+    if ((q->WORK = gsl_vector_alloc(dim)) == NULL)
+        ERR(CO_MEMORY, "allocation failed for q->WORK");
 
     *pq = q;
     return CO_OK;
