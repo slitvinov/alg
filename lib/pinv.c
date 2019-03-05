@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <gsl/gsl_linalg.h>
+#include <gsl/gsl_blas.h>
 
 #include <real.h>
 
@@ -62,6 +63,8 @@ int alg_pinv_fin(T *q) {
 }
 
 static int mult(gsl_matrix *A, gsl_matrix *B, /**/ gsl_matrix *C) {
+    gsl_matrix_set_zero(C);
+    gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1, A, B, 0, C);
     return CO_OK;
 }
 int alg_pinv_apply(T *q, real *A, /**/ real *B) {
@@ -90,14 +93,12 @@ int alg_pinv_apply(T *q, real *A, /**/ real *B) {
         x = (x != 0) ? 1/x : 0;
         gsl_matrix_set(Sigma, i, i, x);
     }
+    /* V = V . Sigma . UT */
+    mult(V, Sigma, Tmp);
     gsl_matrix_transpose(U);
-
-    gsl_matrix_set_zero(Tmp);
-
-    gsl_blas_dgemm (CblasNoTrans, CblasNoTrans,
-                    1.0, &A.matrix, &B.matrix,
-                    0.0, &C.matrix);
-
-    /* V . Sigma . UT */
+    mult(Tmp, U, V);
+    for (m = i = 0; i <  dim; i++)
+        for (j = 0; j < dim; j++)
+            B[m++] = gsl_matrix_get(V, i, j);
     return CO_OK;
 }
