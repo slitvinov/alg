@@ -67,12 +67,13 @@ static int mult(gsl_matrix *A, gsl_matrix *B, /**/ gsl_matrix *C) {
     gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1, A, B, 0, C);
     return CO_OK;
 }
+static real max(real a, real b) { return a > b ? a : b; }
 int alg_pinv_apply(T *q, real *A, /**/ real *B) {
     int i, j, m;
     int dim, err;
     gsl_matrix *U, *V, *Sigma, *Tmp;
     gsl_vector *S, *WORK;
-    double x;
+    double x, smin, smax, eps;
     dim = q->dim;
     U = q->U;
     V = q->V;
@@ -88,15 +89,22 @@ int alg_pinv_apply(T *q, real *A, /**/ real *B) {
         MSG("gsl_linalg_SV_decomp: %s", gsl_strerror(err));
         return 1;
     }
+
+    gsl_vector_minmax(S, &smin, &smax);
+    eps = dim*max(abs(smin), abs(smax))*GSL_DBL_EPSILON;
+
     for (i = 0; i < dim; i++) {
         x = gsl_vector_get(S, i);
-        x = (x != 0) ? 1/x : 0;
+        x = (fabs(x) > eps) ? 1/x : 0;
         gsl_matrix_set(Sigma, i, i, x);
     }
+
     /* V = V . Sigma . UT */
     mult(V, Sigma, Tmp);
     gsl_matrix_transpose(U);
     mult(Tmp, U, V);
+    /**/
+
     for (m = i = 0; i <  dim; i++)
         for (j = 0; j < dim; j++)
             B[m++] = gsl_matrix_get(V, i, j);
