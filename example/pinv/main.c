@@ -15,7 +15,7 @@ int main(__UNUSED int argc, const char **argv) {
     real A[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     real B[99];
     int dim, i, j, m;
-    
+
     dim = 3;
     alg_pinv_ini(dim, &pinv);
     alg_pinv_apply(pinv, A, /**/ B);
@@ -27,6 +27,6 @@ int main(__UNUSED int argc, const char **argv) {
             printf(FMT, A[m++]);
         }
     }
-    
+
     alg_pinv_fin(pinv);
 }
