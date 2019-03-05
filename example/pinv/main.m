@@ -1,6 +1,7 @@
 #!/usr/bin/env octave
 
 f = stdin();
-d = fscanf(f, "%d", 1);
+dim = fscanf(f, "%d", 1);
 m = dlmread(f);
-pinv(m)
+printf("%d\n", dim);
+dlmwrite(stdout(), pinv(m), "precision", "%.16g", "delimiter", " ");

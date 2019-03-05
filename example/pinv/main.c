@@ -23,6 +23,8 @@ int main(__UNUSED int argc, const char **argv) {
             ER("fail to read matrix");
     alg_pinv_ini(dim, &pinv);
     alg_pinv_apply(pinv, A, /**/ B);
+
+    printf("%d\n", dim);
     for (i = m = 0; i < dim; i++) {
         for (j = 0; j < dim; j++) {
             if (j > 0) printf(" ");
