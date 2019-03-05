@@ -30,7 +30,7 @@ static double f(const gsl_vector *v, void *vq) {
     q = (T*)vq;
     n = q->n;
 
-    position = he_real_from(q->position, v->data);
+    position = real_from(q->position, v->data);
     x = position; y = position + n; z = position + 2*n;
     return (*q->f)(n, x, y, z, q->param);
 }
@@ -43,10 +43,10 @@ static void df(const gsl_vector *v, void *vq, gsl_vector *df) {
     q = (T*)vq;
     n = q->n;
 
-    position = he_real_from(q->position, v->data);
+    position = real_from(q->position, v->data);
     x = position; y = position + n; z = position + 2*n;
 
-    force = he_real_from(q->force, df->data);
+    force = real_from(q->force, df->data);
     fx = force; fy = force + n; fz = force + 2*n;
     (*q->df)(n, x, y, z, q->param, /**/ fx, fy, fz);
 
@@ -61,6 +61,7 @@ static void fdf(const gsl_vector *x, void *params, double *f0, gsl_vector *df0) 
 int alg_min_ini(int itype, AlgMinF f0, AlgMinDF df0, void *param,
                 int n, real *xx, real *yy, real *zz, /**/ T **pq) {
     T *q;
+
     double tol, step_size;
     int i, j;
     const gsl_multimin_fdfminimizer_type *type;
@@ -125,7 +126,7 @@ int alg_min_force(T *q, real **pfx, real **pfy, real **pfz)
     n = q->n;
 
     v = gsl_multimin_fdfminimizer_gradient(q->min);
-    force = he_real_from(q->force, v->data);
+    force = real_from(q->force, v->data);
 
     fx = force; fy = force + n; fz = force + 2*n;
 
@@ -140,7 +141,7 @@ int alg_min_position(T *q, /**/ real **px, real **py, real **pz) {
     gsl_vector *v;
     n = q->n;
     v = gsl_multimin_fdfminimizer_x(q->min);
-    position = he_real_from(q->position, v->data);
+    position = real_from(q->position, v->data);
 
     x = position; y = position + n; z = position + 2*n;
     *px = x; *py = y; *pz = z;
