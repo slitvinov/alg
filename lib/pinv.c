@@ -13,7 +13,7 @@
 typedef struct T T;
 struct T {
     int dim;
-    gsl_matrix *A, *V;
+    gsl_matrix *U, *V, *Sigma, *Tmp;
     gsl_vector *S, *WORK;
 };
 
@@ -21,12 +21,20 @@ int alg_pinv_ini(int dim, T **pq) {
     T *q;
     MALLOC(1, &q);
     q->dim = dim;
-    if ((q->A = gsl_matrix_alloc(dim, dim)) == NULL) {
-        MSG("allocation failed for q->A");
+    if ((q->U = gsl_matrix_alloc(dim, dim)) == NULL) {
+        MSG("allocation failed for q->U");
         return 1;
     }
     if ((q->V = gsl_matrix_alloc(dim, dim)) == NULL) {
         MSG("allocation failed for q->V");
+        return 1;
+    }
+    if ((q->Sigma = gsl_matrix_calloc(dim, dim)) == NULL) { /* calloc */
+        MSG("allocation failed for q->Sigma");
+        return 1;
+    }
+    if ((q->Tmp = gsl_matrix_alloc(dim, dim)) == NULL) {
+        MSG("allocation failed for q->Tmp");
         return 1;
     }
     if ((q->S = gsl_vector_alloc(dim)) == NULL) {
@@ -43,32 +51,53 @@ int alg_pinv_ini(int dim, T **pq) {
 }
 
 int alg_pinv_fin(T *q) {
-    gsl_matrix_free(q->A);
+    gsl_matrix_free(q->U);
     gsl_matrix_free(q->V);
+    gsl_matrix_free(q->Sigma);
+    gsl_matrix_free(q->Tmp);
     gsl_vector_free(q->S);
     gsl_vector_free(q->WORK);
     FREE(q);
     return CO_OK;
 }
 
-int alg_pinv_apply(T *q, real *A0, /**/ real *B) {
+static int mult(gsl_matrix *A, gsl_matrix *B, /**/ gsl_matrix *C) {
+    return CO_OK;
+}
+int alg_pinv_apply(T *q, real *A, /**/ real *B) {
     int i, j, m;
-    int dim;
-    gsl_matrix *A, *V;
+    int dim, err;
+    gsl_matrix *U, *V, *Sigma, *Tmp;
     gsl_vector *S, *WORK;
+    double x;
     dim = q->dim;
-    A = q->A;
+    U = q->U;
     V = q->V;
     S = q->S;
+    Sigma = q->Sigma;
+    Tmp = q->Tmp;
     WORK = q->WORK;
 
     for (m = i = 0; i <  dim; i++)
         for (j = 0; j < dim; j++)
-            gsl_matrix_set(A, i, j, A0[m++]);
-    if (gsl_linalg_SV_decomp(A, V, S, WORK) != GSL_SUCCESS) {
-        MSG("gsl_linalg_SV_decomp failed");
+            gsl_matrix_set(U, i, j, A[m++]);
+    if ((err = gsl_linalg_SV_decomp(U, V, S, WORK)) != GSL_SUCCESS) {
+        MSG("gsl_linalg_SV_decomp: %s", gsl_strerror(err));
         return 1;
     }
+    for (i = 0; i < dim; i++) {
+        x = gsl_vector_get(S, i);
+        x = (x != 0) ? 1/x : 0;
+        gsl_matrix_set(Sigma, i, i, x);
+    }
+    gsl_matrix_transpose(U);
 
+    gsl_matrix_set_zero(Tmp);
+
+    gsl_blas_dgemm (CblasNoTrans, CblasNoTrans,
+                    1.0, &A.matrix, &B.matrix,
+                    0.0, &C.matrix);
+
+    /* V . Sigma . UT */
     return CO_OK;
 }
