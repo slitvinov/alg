@@ -21,11 +21,11 @@ int main(__UNUSED int argc, const char **argv) {
     alg_pinv_apply(pinv, A, /**/ B);
 
     for (i = m = 0; i < dim; i++) {
-        if (i > 0) puts("\n");
         for (j = 0; j < dim; j++) {
-            if (j > 0) puts(" ");
+            if (j > 0) printf(" ");
             printf(FMT, A[m++]);
         }
+        printf("\n");
     }
 
     alg_pinv_fin(pinv);
