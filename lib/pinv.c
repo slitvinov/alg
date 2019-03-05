@@ -36,7 +36,7 @@ int alg_pinv_ini(int dim, T **pq) {
         MSG("allocation failed for q->work");
         return 1;
     }
-    
+
     *pq = q;
     return CO_OK;
 }
@@ -45,11 +45,12 @@ int alg_pinv_fin(T *q) {
     gsl_matrix_free(q->A);
     gsl_matrix_free(q->V);
     gsl_vector_free(q->S);
-    gsl_vector_free(q->work);        
+    gsl_vector_free(q->work);
     FREE(q);
     return CO_OK;
 }
 
 int alg_pinv_apply(T *q, real *A, /**/ real *B) {
+
     return CO_OK;
 }
