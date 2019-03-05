@@ -16,7 +16,7 @@ struct T {
     gsl_multimin_fdfminimizer *min;
     gsl_multimin_function_fdf func;
 
-    HeReal *position, *force;
+    Real *position, *force;
 
     AlgMinF f;
     AlgMinDF df;
@@ -50,7 +50,7 @@ static void df(const gsl_vector *v, void *vq, gsl_vector *df) {
     fx = force; fy = force + n; fz = force + 2*n;
     (*q->df)(n, x, y, z, q->param, /**/ fx, fy, fz);
 
-    df->data = he_real_to(q->force, force);
+    df->data = real_to(q->force, force);
 }
 
 static void fdf(const gsl_vector *x, void *params, double *f0, gsl_vector *df0) {
@@ -79,8 +79,8 @@ int alg_min_ini(int itype, AlgMinF f0, AlgMinDF df0, void *param,
     MALLOC(1, &q);
 
     position = gsl_vector_alloc(3*n);
-    he_real_ini(3*n, &q->position);
-    he_real_ini(3*n, &q->force);
+    real_ini(3*n, &q->position);
+    real_ini(3*n, &q->force);
 
     q->n = n;
     q->f = f0;
@@ -108,8 +108,8 @@ int alg_min_ini(int itype, AlgMinF f0, AlgMinDF df0, void *param,
 
 int alg_min_fin(T *q) {
     gsl_multimin_fdfminimizer_free(q->min);
-    he_real_fin(q->position);
-    he_real_fin(q->force);
+    real_fin(q->position);
+    real_fin(q->force);
     FREE(q);
     return CO_OK;
 }
