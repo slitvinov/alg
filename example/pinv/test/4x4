@@ -1,2 +1,2 @@
 # nTEST: 4x4
-./main < data/4x4 > main.out.txt
+co.run ./main < data/4x4 > main.out.txt
