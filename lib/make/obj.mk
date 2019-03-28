@@ -1,5 +1,5 @@
 O = \
-
+rng.o
 O_S = \
 eig.s.o min.s.o pinv.s.o x.s.o
 O_D = \
