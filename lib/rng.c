@@ -12,7 +12,7 @@
 
 struct T
 {
-	gsl_rng * r;
+	gsl_rng *r;
 };
 
 int
@@ -32,7 +32,7 @@ alg_rng_ini(T** pq)
 }
 
 int
-alg_rng_free(T *q)
+alg_rng_fin(T *q)
 {
 	gsl_rng_free(q->r);
 	FREE(q);
@@ -42,7 +42,9 @@ alg_rng_free(T *q)
 real
 alg_rng_gaussian(T *q, real sigma)
 {
-	return gsl_ran_gaussian(q->r, sigma);
+	double ans;
+	ans = gsl_ran_gaussian(q->r, sigma);
+	return ans;
 }
 
 real
