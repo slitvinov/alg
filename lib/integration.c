@@ -155,3 +155,11 @@ alg_integration_fin(T *q)
 	FREE(q);
 	return CO_OK;
 }
+
+int
+alg_integration_apply(T *q, real a, real b, real (*fun)(real, void*), void *p, real *res)
+{
+	if (a > b)
+		ERR(CO_NUM, "a > b");
+	return q->apply(q, a, b, fun, p, res);
+}
