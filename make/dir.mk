@@ -4,7 +4,7 @@ PREFIX = $(HOME)
 S = $(PWD)
 
 dir:
-	@install0 () ( cd "$$d" && $(MAKE) PREFIX=$(PREFIX) S=$S $(MAKECMDGOALS) ); \
+	@install0 () ( cd "$$d" && $(MAKE) PREFIX=$(PREFIX) $(MAKECMDGOALS) ); \
 	for d in $D; \
 	do echo dir "'$$d'"; \
 	install0; \
