@@ -5,17 +5,16 @@
 #include <real.h>
 #include <co/err.h>
 #include <co/memory.h>
-#include <co/real.h>
 #include <co/macro.h>
 
 #include "alg/integration.h"
 
 #define T AlgIntegration
 enum {
-	N = 1000
+	N = 10000
 };
 static const double EPSABS = 0;
-static const double EPSREL = 1e-7;
+static const double EPSREL = 1e-12;
 static const size_t LIMIT = N;
 
 struct Param {
@@ -135,6 +134,12 @@ alg_integration_ini(int type, T **pq)
 		break;
 	case GAUSS31:
 		q->key = GSL_INTEG_GAUSS31;
+		ini = ini_qag;
+		q->fin = fin_qag;
+		q->apply = apply_qag;
+		break;
+	case GAUSS61:
+		q->key = GSL_INTEG_GAUSS61;
 		ini = ini_qag;
 		q->fin = fin_qag;
 		q->apply = apply_qag;
