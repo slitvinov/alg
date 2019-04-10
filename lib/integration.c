@@ -14,7 +14,7 @@ enum {
 	N = 10000
 };
 static const double EPSABS = 0;
-static const double EPSREL = 1e-12;
+static const double EPSREL = 1e-6;
 static const size_t LIMIT = N;
 
 struct Param {
