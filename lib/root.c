@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <gsl/gsl_integration.h>
+#include <gsl/gsl_roots.h>
 #include <gsl/gsl_errno.h>
 
 #include <real.h>
