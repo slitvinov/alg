@@ -11,6 +11,9 @@
 
 #define T AlgRoot
 
+static int Type[] = {BISECTION, FALSEPOS, BRENT};
+//static const gsl_root_fsolver_type (*const) SType[] = {gsl_root_fsolver_bisection} ; //, gsl_root_fsolver_falsepos, gsl_root_fsolver_brent};
+
 struct Param {
 	void *param;
 	real (*function)(real, void*);
@@ -31,8 +34,17 @@ struct T {
 int alg_root_ini(int type, T **pq)
 {
 	T *q;
+	int n;
+	gsl_root_fsolver *s;
+
 	MALLOC(1, &q);
 
+	s = gsl_root_fsolver_alloc(type);
+	if (s == NULL)
+		ERR(CO_MEMORY, "fail to allocate root");
+	n = sizeof(Type)/sizeof(Type[0]);
+
+	q->s = s;
 	*pq = q;
 	return CO_OK;
 }
