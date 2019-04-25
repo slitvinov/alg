@@ -1,6 +1,6 @@
 .POSIX:
 M = main
-PREC = d
+PREC = s
 ALG_CFLAGS = `alg.conf --cflags $(PREC)`
 ALG_LDFLAGS = `alg.conf --libs $(PREC)`
 
