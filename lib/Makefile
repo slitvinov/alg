@@ -2,7 +2,7 @@ PREFIX = $(HOME)
 CO_S_CFLAGS = `co.conf --cflags s`
 CO_D_CFLAGS = `co.conf --cflags d`
 
-TRG = alg
+P = alg
 L = libalg_s.a libalg_d.a
 
 include make/hdr.mk

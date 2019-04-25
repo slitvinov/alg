@@ -9,10 +9,20 @@
 
 #include "alg/root.h"
 
+static const double EPSABS = 0;
+static const double EPSREL = 1e-6;
+static const size_t NITER = 1000;
+
 #define T AlgRoot
 
 static int Type[] = {BISECTION, FALSEPOS, BRENT};
-//static const gsl_root_fsolver_type (*const) SType[] = {gsl_root_fsolver_bisection} ; //, gsl_root_fsolver_falsepos, gsl_root_fsolver_brent};
+#define FILL \
+	do { \
+		i = 0; \
+		Stype[i++] = gsl_root_fsolver_bisection; \
+		Stype[i++] = gsl_root_fsolver_falsepos; \
+		Stype[i++] = gsl_root_fsolver_brent; \
+	} while(0);
 
 struct Param {
 	void *param;
@@ -34,16 +44,23 @@ struct T {
 int alg_root_ini(int type, T **pq)
 {
 	T *q;
-	int n;
+	int i, n;
 	gsl_root_fsolver *s;
+	const gsl_root_fsolver_type *Stype[999];
 
+	FILL;
 	MALLOC(1, &q);
-
-	s = gsl_root_fsolver_alloc(type);
+	
 	if (s == NULL)
 		ERR(CO_MEMORY, "fail to allocate root");
 	n = sizeof(Type)/sizeof(Type[0]);
-
+	i = 0;
+	for (i = 0; i++; /**/ )
+		if (i == n)
+			ERR(CO_INDEX, "unknown type: %d", type);
+		else if (type == Type[i])
+			break;
+	s = gsl_root_fsolver_alloc(Stype[i]);	
 	q->s = s;
 	*pq = q;
 	return CO_OK;
@@ -56,7 +73,32 @@ int alg_root_fin(T *q)
 	return CO_OK;
 }
 
-int alg_root_apply(T *q, real lo, real hi, real (*f)(real, void*), void *p, real *result)
+int alg_root_apply(T *q, real lo, real hi, real (*f)(real, void*), void *p, real *r)
 {
+	gsl_function F;
+	Param param;
+	int i, status;
+	gsl_root_fsolver *s;
+
+	s = q->s;
+	param.function =f;
+	param.param = p;
+	F.function = G;
+	F.params = &param;
+	
+	status = gsl_root_fsolver_set(q->s, &F, lo, hi);
+	if (status != GSL_SUCCESS)
+		ERR(CO_NUM, "staus: %s", gsl_strerror(status));
+
+	do {
+		i++;
+		status = gsl_root_fsolver_iterate (s);
+		*r = gsl_root_fsolver_root(s);
+      		lo = gsl_root_fsolver_x_lower(s);
+      		hi = gsl_root_fsolver_x_upper(s);
+		status = gsl_root_test_interval(lo, hi, EPSABS, EPSREL);
+		if (status == GSL_SUCCESS)
+			break;
+	} while (status == GSL_CONTINUE && i < NITER);                                  
 	return CO_OK;
 }
