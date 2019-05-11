@@ -21,22 +21,22 @@ enum
 };
 int ode_ini(int type, int dim, real dt, int (*)(real, const real*, real *dy, void*), void*, T**);
 int ode_fin(T*);
-int ode_apply(T*, real *time, real dt, real*);
+int ode_apply(T*, real *time, real t, real*);
 #undef T
 
 #define T Ode
-struct T
-{
-	gsl_odeiv2_driver *d;
-	void *param;
-};
-
 typedef struct Param Param;
 struct Param
 {
-	void *param;
-	double *y, *dy;
+	void *params;
+	real *x, *g;
 	int dim;
+	int (*f)(real, const real*, real *dy, void*);
+};
+struct T
+{
+	gsl_odeiv2_driver *d;
+	Param params;
 };
 
 static int Type[] =
@@ -52,14 +52,39 @@ static int Type[] =
 		Stype[i++] = gsl_odeiv2_step_rk8pd; \
 	} while(0);
 
+static int
+F(double t, const double y[], double f[], void *p0)
+{
+	Param *p;
+	real *x, *g;
+	void *params;
+	int i, status, dim;
+
+	p = p0;
+	x = p->x;
+	g = p->g;
+	dim = p->dim;
+	params = p->params;
+	for (i = 0; i < dim; i++)
+		x[i] = y[i];	
+	status = p->f(t, x, g, params);
+	for (i = 0; i < dim; i++)
+		f[i] = g[i];
+	if (status == CO_OK)
+		return GSL_SUCCESS;
+	else
+		return GSL_EINVAL;
+}
+
 int
-ode_ini(int type, int dim, real dt, int (*f)(real, const real*, real *dy, void*), void *param, T **pq)
+ode_ini(int type, int dim, real dt, int (*f)(real, const real*, real *f, void*), void *param, T **pq)
 {	
 	T *q;
 	int i, n;
 	gsl_odeiv2_driver *d;
 	gsl_odeiv2_system sys;
 	const gsl_odeiv2_step_type *Stype[99];
+	Param *p;
 	
 	FILL;
 	MALLOC(1, &q);
@@ -71,16 +96,42 @@ ode_ini(int type, int dim, real dt, int (*f)(real, const real*, real *dy, void*)
 		if (Type[i] == type)
 			break;
 		i++;
-	}
-	sys.function  = NULL;
+	}	
+	p = &q->params;
+	MALLOC(dim, &p->x);
+	MALLOC(dim, &p->g);
+	p->dim = dim;
+	p->f = f;
+	p->params = param;
+	sys.function  = F;
 	sys.jacobian = NULL;
 	sys.dimension = dim;
-	sys.params = NULL;	
+	sys.params = p;
 	d = gsl_odeiv2_driver_alloc_y_new(&sys, Stype[i], dt, EPSABS, EPSREL);
 	if (d == NULL)
 		ERR(CO_MEMORY, "fail to allocate ode driver");	    	 
 	q->d = d;
 	*pq = q;
+	return CO_OK;
+}
+
+int
+ode_fin(T *q)
+{
+	FREE(q->params.x);
+	FREE(q->params.g);
+	FREE(q);
+	return CO_OK;
+}
+
+int
+ode_apply(T *q, real *pt, real t, real *x)
+{
+	int status;
+	
+	double time, ti;
+	double *y;
+	gsl_odeiv2_driver_apply(q->d, &time, ti, y);
 	return CO_OK;
 }
 
