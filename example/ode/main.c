@@ -36,6 +36,7 @@ struct Param
 struct T
 {
 	gsl_odeiv2_driver *d;
+	double *y;
 	Param params;
 };
 
@@ -96,7 +97,8 @@ ode_ini(int type, int dim, real dt, int (*f)(real, const real*, real *f, void*),
 		if (Type[i] == type)
 			break;
 		i++;
-	}	
+	}
+	MALLOC(dim, &q->y);
 	p = &q->params;
 	MALLOC(dim, &p->x);
 	MALLOC(dim, &p->g);
@@ -118,6 +120,7 @@ ode_ini(int type, int dim, real dt, int (*f)(real, const real*, real *f, void*),
 int
 ode_fin(T *q)
 {
+	FREE(q->y);
 	FREE(q->params.x);
 	FREE(q->params.g);
 	FREE(q);
@@ -125,14 +128,22 @@ ode_fin(T *q)
 }
 
 int
-ode_apply(T *q, real *pt, real t, real *x)
+ode_apply(T *q, real *ptime, real t, real *x)
 {
-	int status;
-	
-	double time, ti;
-	double *y;
-	gsl_odeiv2_driver_apply(q->d, &time, ti, y);
-	return CO_OK;
+	int status;	
+	double time, *y;
+	int dim, i;
+
+	y = q->y;
+	dim = q->params.dim;
+	time = *ptime;
+	for (i = 0; i < dim; i++)
+		y[i] = x[i];
+	status = gsl_odeiv2_driver_apply(q->d, &time, t, y);
+	for (i = 0; i < dim; i++)
+		x[i] = y[i];
+	*ptime = time;
+	return status == GSL_SUCCESS ? CO_OK : CO_NUM;
 }
 
 int
