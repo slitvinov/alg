@@ -14,7 +14,7 @@ all:  $M
 
 test: $M; atest test/*
 install:
-lint:; make CFLAGS='-Wall -Wextra -g -O2' CC=clang
+lint:; make CFLAGS='-Wall -Wextra -g -O2'
 
 .PHONY: clean test install lint
 clean:; rm -f $M.o $M

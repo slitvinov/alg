@@ -69,7 +69,7 @@ F(double t, const double y[], double f[], void *p0)
 	dim = p->dim;
 	params = p->params;
 	for (i = 0; i < dim; i++)
-		x[i] = y[i];	
+		x[i] = y[i];
 	status = p->f(t, x, g, params);
 	for (i = 0; i < dim; i++)
 		f[i] = g[i];
@@ -81,14 +81,14 @@ F(double t, const double y[], double f[], void *p0)
 
 int
 ode_ini(int type, int dim, real dt, int (*f)(real, const real*, real *f, void*), void *param, T **pq)
-{	
+{
 	T *q;
 	int i, n;
 	gsl_odeiv2_driver *d;
 	gsl_odeiv2_system *sys;
 	const gsl_odeiv2_step_type *Stype[99];
 	Param *p;
-	
+
 	FILL;
 	MALLOC(1, &q);
 	n = sizeof(Type)/sizeof(Type[0]);
@@ -114,7 +114,7 @@ ode_ini(int type, int dim, real dt, int (*f)(real, const real*, real *f, void*),
 	sys->params = p;
 	d = gsl_odeiv2_driver_alloc_y_new(sys, Stype[i], dt, EPSABS, EPSREL);
 	if (d == NULL)
-		ERR(CO_MEMORY, "fail to allocate ode driver");	    	 
+		ERR(CO_MEMORY, "fail to allocate ode driver");
 	q->d = d;
 	*pq = q;
 	return CO_OK;
@@ -134,7 +134,7 @@ ode_fin(T *q)
 int
 ode_apply(T *q, real *ptime, real t, real *x)
 {
-	int status;	
+	int status;
 	double time, *y;
 	int dim, i;
 
@@ -151,15 +151,6 @@ ode_apply(T *q, real *ptime, real t, real *x)
 }
 
 static int
-func (__UNUSED double t, const double y[], double f[], void *params)
-{
-	double mu = *(double *)params;
-	f[0] = y[1];
-	f[1] = -y[0] - mu*y[1]*(y[0]*y[0] - 1);
-	return GSL_SUCCESS;
-}
-
-static int
 f (__UNUSED real t, const real y[], real f[], void *params)
 {
 	real mu = *(real*)params;
@@ -171,47 +162,20 @@ f (__UNUSED real t, const real y[], real f[], void *params)
 int
 main (void)
 {
-	double mu = 10;
 	real m = 10;
 	Ode *ode;
-	ode_ini(RK2, 2, 1e-6, f, &m, &ode);
-
-	gsl_odeiv2_system sys = {
-		func, NULL, 2, &mu
-	};
-
-	gsl_odeiv2_driver * d =
-	    gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk4,
-	    1e-6, 1e-6, 0.0);
 	int i;
-	double t = 0.0, t1 = 100.0;
-	double y[2] =
-	{
-		1.0, 0.0
-	};
+	real t = 0.0, t1 = 100.0, ti;
+	ode_ini(RK2, 2, 1e-6, f, &m, &ode);
 	real x[2] =
-	{
+	    {
 		1.0, 0.0
 	};
-
-	for (i = 1; i <= 100; i++)
-	{
-		real t0, ti0;
-		double ti = i * t1 / 100.0;
-		t0 = t;
-		ti0 = ti;
-		int status = gsl_odeiv2_driver_apply (d, &t, ti, y);
-		ode_apply(ode, &t0, ti0, x);
-		if (status != GSL_SUCCESS)
-		{
-			printf ("error, return value=%d\n", status);
-			break;
-		}
-		printf ("%.5e %.5e %.5e %.5e %.5e\n", t, y[0], y[1], x[0], x[1]);
+	for (i = 1; i <= 100; i++) {
+		ti = i * t1 / 100.0;
+		ode_apply(ode, &t, ti, x);
+		printf ("%.5e %.5e %.5e\n", t, x[0], x[1]);
 	}
-
-	gsl_odeiv2_driver_free (d);
 	ode_fin(ode);
-	return 0;
 }
 
