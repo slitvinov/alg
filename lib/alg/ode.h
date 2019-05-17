@@ -1,5 +1,5 @@
 #define T Ode
-typedef struct Ode Ode;
+typedef struct T T;
 enum
 {
 	RK2, RK4, RKF45, RKCK, RK8PD
