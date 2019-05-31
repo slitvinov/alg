@@ -81,6 +81,7 @@ alg_root_apply(T *q, real lo, real hi, real (*f)(real, void*), void *p, real *r)
 	Param param;
 	int i, status;
 	gsl_root_fsolver *s;
+	gsl_error_handler_t *h;
 
 	s = q->s;
 	param.function =f;
@@ -88,6 +89,7 @@ alg_root_apply(T *q, real lo, real hi, real (*f)(real, void*), void *p, real *r)
 	F.function = G;
 	F.params = &param;
 	
+	h = gsl_set_error_handler_off();
 	status = gsl_root_fsolver_set(q->s, &F, lo, hi);
 	if (status != GSL_SUCCESS)
 		ERR(CO_NUM, "staus: %s", gsl_strerror(status));
@@ -105,6 +107,7 @@ alg_root_apply(T *q, real lo, real hi, real (*f)(real, void*), void *p, real *r)
 			break;
 	} while (status == GSL_CONTINUE && i < NITER);
 	q->niter = i;
+	gsl_set_error_handler(h);
                              
 	return CO_OK;
 }
