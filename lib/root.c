@@ -1,17 +1,16 @@
 #include <stdio.h>
 #include <gsl/gsl_roots.h>
 #include <gsl/gsl_errno.h>
-
 #include <real.h>
 #include <co/err.h>
-#include <co/memory.h>
 #include <co/macro.h>
-
+#include <co/memory.h>
 #include "alg/root.h"
 
 static const double EPSABS = 1e-10;
 static const double EPSREL = 1e-8;
 static const size_t NITER = 1000;
+#define FMT CO_REAL_OUT
 
 #define T AlgRoot
 
@@ -84,15 +83,18 @@ alg_root_apply(T *q, real lo, real hi, real (*f)(real, void*), void *p, real *r)
 	gsl_error_handler_t *h;
 
 	s = q->s;
-	param.function =f;
+	param.function = f;
 	param.param = p;
 	F.function = G;
 	F.params = &param;
 	
 	h = gsl_set_error_handler_off();
 	status = gsl_root_fsolver_set(q->s, &F, lo, hi);
-	if (status != GSL_SUCCESS)
+	if (status != GSL_SUCCESS) {
+		MSG("lo, hi: " FMT " " FMT, lo, hi);
+		MSG("f(lo), f(hi) " FMT " " FMT, f(lo, p), f(hi, p));
 		ERR(CO_NUM, "staus: %s", gsl_strerror(status));
+	}
 
 	do {
 		i++;

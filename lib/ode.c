@@ -48,7 +48,6 @@ F(double t, const double y[], double f[], void *p0)
 	real *x, *g;
 	void *params;
 	int i, status, dim;
-	//return GSL_SUCCESS;
 
 	p = p0;
 	x = p->x;
