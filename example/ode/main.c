@@ -38,4 +38,3 @@ main (void)
 	}
 	ode_fin(ode);
 }
-
