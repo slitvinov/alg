@@ -8,6 +8,7 @@
 #include <co/macro.h>
 #include "alg/ode.h"
 
+#define FMT CO_REAL_OUT
 static const real EPSABS =  1e-8;
 static const real EPSREL = 1e-8;
 
@@ -117,8 +118,27 @@ ode_fin(T *q)
 	return CO_OK;
 }
 
-int
-ode_apply(T *q, real *ptime, real t, real *x)
+static int
+step_addaptive(T *q, double *time, double t, double *y)
+{
+    int status;
+    status = gsl_odeiv2_driver_apply(q->d, time, t, y);
+    return status == GSL_SUCCESS ? CO_OK : CO_NUM;
+}
+
+static int
+step_fixed(T *q, double *time, double t, double *y)
+{
+    int status, nstep;
+    double dt;
+    nstep = 1;
+    dt = t - *time;
+    status = gsl_odeiv2_driver_apply_fixed_step(q->d, time, dt, nstep, y);
+    return status == GSL_SUCCESS ? CO_OK : CO_NUM;
+}
+
+static int
+apply(T *q, real *ptime, real t, real *x, int (*step)(T*, double*, double, double*))
 {
 	int status;
 	double time, *y;
@@ -129,9 +149,23 @@ ode_apply(T *q, real *ptime, real t, real *x)
 	time = *ptime;
 	for (i = 0; i < dim; i++)
 		y[i] = x[i];
-	status = gsl_odeiv2_driver_apply(q->d, &time, t, y);
+	status = step(q, &time, t, y);
+	if (status != CO_OK)
+	    ERR(CO_NUM, "step failed (time = " FMT ", dt = " FMT ")", time, t);
 	for (i = 0; i < dim; i++)
 		x[i] = y[i];
 	*ptime = time;
-	return status == GSL_SUCCESS ? CO_OK : CO_NUM;
+	return status;
+}
+
+int
+ode_apply(T *q, real *ptime, real t, real *x)
+{
+    return apply(q, ptime, t, x, step_addaptive);
+}
+
+int
+ode_apply_fixed(T *q, real *ptime, real t, real *x)
+{
+    return apply(q, ptime, t, x, step_fixed);
 }
