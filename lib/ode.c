@@ -151,7 +151,7 @@ apply(T *q, real *ptime, real t, real *x, int (*step)(T*, double*, double, doubl
 		y[i] = x[i];
 	status = step(q, &time, t, y);
 	if (status != CO_OK)
-	    ERR(CO_NUM, "step failed (time = " FMT ", dt = " FMT ")", time, t);
+	    ERR(CO_NUM, "step failed (time = " FMT ", dt = " FMT ")", time, t - time);
 	for (i = 0; i < dim; i++)
 		x[i] = y[i];
 	*ptime = time;

@@ -26,14 +26,15 @@ main (void)
 {
 	real m = 10;
 	Ode *ode;
-	int i;
+	int i, n;
 	real t = 0.0, t1 = 100.0, ti;
 	real x[2] = {1.0, 0.0};
+	n = 100000;
 
-	ode_ini(RK2, 2, 1e-6, f, &m, &ode);
-	for (i = 1; i <= 100; i++) {
-		ti = i * t1 / 100.0;
-		ode_apply(ode, &t, ti, x);
+	ode_ini(RK4, 2, 1e-6, f, &m, &ode);
+	for (i = 1; i <= n; i++) {
+		ti = i * t1 / n;
+		ode_apply_fixed(ode, &t, ti, x);
 		printf ("%.5e %.5e %.5e\n", t, x[0], x[1]);
 	}
 	ode_fin(ode);
