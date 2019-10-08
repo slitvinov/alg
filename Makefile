@@ -4,5 +4,5 @@ install: dir
 test: dir
 clean: dir
 include make/dir.mk
-
-.PHONY: test install clean
+hdr:; (cd lib; make hdr)
+.PHONY: test install clean hdr
