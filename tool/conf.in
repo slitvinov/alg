@@ -1,3 +1,5 @@
+#!/bin/sh
+
 . alg.util
 
 prog=alg.conf
