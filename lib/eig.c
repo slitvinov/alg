@@ -20,8 +20,7 @@ int alg_eig_vectors(const real A[6], /**/ real V[9]) {
     gsl_vector *val;
     gsl_matrix *vec;
     gsl_eigen_symmv_workspace *w;
-    int i;
-
+    int i, status;
     double deter;
 
     val = gsl_vector_alloc(3);
@@ -34,26 +33,22 @@ int alg_eig_vectors(const real A[6], /**/ real V[9]) {
     B[i++] = A[ZX]; B[i++] = A[ZY]; B[i++] = A[ZZ];
     
     m = gsl_matrix_view_array(B, 3, 3);
-    gsl_eigen_symmv(&m.matrix, val, vec, w);
+    status = gsl_eigen_symmv(&m.matrix, val, vec, w);
+    if (status != GSL_SUCCESS)
+	ERR(CO_NUM, "gsl_eigen_symmv failed");
     gsl_eigen_symmv_sort(val, vec, GSL_EIGEN_SORT_ABS_ASC);
-
     
     i = 0;
     V[i++] = get(vec, X, X); V[i++] = get(vec, X, Y); V[i++] = get(vec, X, Z);
     V[i++] = get(vec, Y, X); V[i++] = get(vec, Y, Y); V[i++] = get(vec, Y, Z);
     V[i++] = get(vec, Z, X); V[i++] = get(vec, Z, Y); V[i++] = get(vec, Z, Z);
 
-    deter= V[0]*(V[4]*V[8]-V[5]*V[7])
-      - V[1]*(V[3]*V[8]-V[5]*V[6])
-      + V[2]*(V[3]*V[7]-V[4]*V[6]);
-
-    if ( deter < 0 )
-      {
-	V[0]=-V[0];
-	V[3]=-V[3];
-	V[6]=-V[6];
-      }
-
+    deter= V[0]*(V[4]*V[8]-V[5]*V[7]) - V[1]*(V[3]*V[8]-V[5]*V[6]) + V[2]*(V[3]*V[7]-V[4]*V[6]);
+    if (deter < 0) {
+	V[XX] = -V[XX];
+	V[YY] = -V[YY];
+	V[ZZ] = -V[ZZ];
+    }
     gsl_vector_free(val);
     gsl_matrix_free(vec);
     gsl_eigen_symmv_free(w);
