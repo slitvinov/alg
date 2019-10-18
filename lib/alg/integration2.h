@@ -1,7 +1,5 @@
 #define T AlgIntegration2
 typedef struct T T;
-
-enum {QNG, GAUSS15, GAUSS21, GAUSS31, GAUSS61};
 int alg_integration2_ini(int, T**);
 int alg_integration2_fin(T*);
 int alg_integration2_apply(T*, real u0, real u1,
