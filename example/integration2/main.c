@@ -21,9 +21,11 @@ zero(real x, void *p)
 }
 
 static real
-one(real x, void *p)
+one(real x, void *vp)
 {
-    return 1;
+    real alpha;
+    alpha = *(real*)vp;
+    return alpha;
 }
 
 int
@@ -34,7 +36,7 @@ main(void)
 	alg_integration2_ini(GAUSS31, &integ);
 	a = 0; 
 	b = 1; 
-	alpha = 1;
+	alpha = 10;
 	alg_integration2_apply(integ, a, b, &zero, &one, &f, &alpha, &result);
 	printf(FMT "\n", result);
 	alg_integration2_fin(integ);
