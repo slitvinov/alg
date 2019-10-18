@@ -1,5 +1,5 @@
 .POSIX:
-M = main
+M = main tri2
 PREC = d
 ALG_CFLAGS = `alg.conf --cflags $(PREC)`
 ALG_LDFLAGS = `alg.conf --libs $(PREC)`
