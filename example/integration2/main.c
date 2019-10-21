@@ -9,9 +9,10 @@
 static real
 f(real x, real y, void *p)
 {
-	real alpha;
-	alpha = *(real*)p;
-	return alpha*x*y;
+    real alpha;
+
+    alpha = *(real *) p;
+    return alpha * x * y;
 }
 
 static real
@@ -24,20 +25,22 @@ static real
 one(real x, void *vp)
 {
     real alpha;
-    alpha = *(real*)vp;
+
+    alpha = *(real *) vp;
     return alpha;
 }
 
 int
 main(void)
 {
-	AlgIntegration2 *integ;
-	real a, b, result, alpha;
-	alg_integration2_ini(GAUSS31, &integ);
-	a = 0; 
-	b = 1; 
-	alpha = 10;
-	alg_integration2_apply(integ, a, b, &zero, &one, &f, &alpha, &result);
-	printf(FMT "\n", result);
-	alg_integration2_fin(integ);
+    AlgIntegration2 *integ;
+    real a, b, result, alpha;
+
+    alg_integration2_ini(GAUSS31, &integ);
+    a = 0;
+    b = 1;
+    alpha = 10;
+    alg_integration2_apply(integ, a, b, &zero, &one, &f, &alpha, &result);
+    printf(FMT "\n", result);
+    alg_integration2_fin(integ);
 }
