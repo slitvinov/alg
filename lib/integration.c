@@ -78,6 +78,46 @@ apply_qag(T * q, real a, real b, real(*f) (real, void *), void *p,
 }
 
 static int
+ini_qags(T * q)
+{
+    q->w = gsl_integration_workspace_alloc(N);
+    if (q->w == NULL)
+        ERR(CO_MEMORY, "fail to allocate");
+    return CO_OK;
+}
+
+static int
+fin_qags(T * q)
+{
+    gsl_integration_workspace_free(q->w);
+    return CO_OK;
+}
+
+static int
+apply_qags(T * q, real a, real b, real(*f) (real, void *), void *p,
+           real * result)
+{
+    gsl_function F;
+    Param param;
+    int status;
+    double abserr, dresult;
+
+    param.function = f;
+    param.param = p;
+    F.function = G;
+    F.params = &param;
+    status =
+        gsl_integration_qags(&F, a, b, EPSABS, EPSREL, LIMIT, q->w,
+                             &dresult, &abserr);
+    if (status != GSL_SUCCESS)
+        ERR(CO_NUM, "staus: %s", gsl_strerror(status));
+
+    *result = dresult;
+    return CO_OK;
+}
+
+
+static int
 apply_qng(__UNUSED T * q, real a, real b, real(*f) (real, void *), void *p,
           real * result)
 {
@@ -126,6 +166,11 @@ alg_integration_ini(int type, T ** pq)
         ini = ini_qng;
         q->fin = fin_qng;
         q->apply = apply_qng;
+        break;
+    case QAGS:
+        ini = ini_qags;
+        q->fin = fin_qags;
+        q->apply = apply_qags;
         break;
     case GAUSS15:
         q->key = GSL_INTEG_GAUSS15;

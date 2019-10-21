@@ -3,7 +3,8 @@
 typedef struct T T;
 
 enum { CONJUGATE_FR, CONJUGATE_PR, VECTOR_BFGS2, VECTOR_BFGS,
-        STEEPEST_DESCENT };
+    STEEPEST_DESCENT
+};
 
 typedef real(*AlgMinF) (int n, const real * xx, const real * yy,
                         const real * zz, void *param);
