@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
 
@@ -8,6 +9,8 @@
 #include <co/macro.h>
 
 #include "alg/integration.h"
+static const char *String[] =
+    { "gauss15", "gauss21", "gauss31", "gauss61", "qng", "qags" };
 
 #define T AlgIntegration
 enum {
@@ -152,6 +155,19 @@ static int
 fin_qng(__UNUSED T * q)
 {
     return CO_OK;
+}
+
+int
+alg_integration_str2enum(const char *str, int *penum)
+{
+    int i;
+
+    for (i = 0; i < sizeof(String) / sizeof(String[0]); i++)
+        if (strncmp(str, String[i], 999) == 0) {
+            *penum = i;
+            return CO_OK;
+        }
+    ERR(CO_NUM, "unknown integration type '%s'", str);
 }
 
 int
