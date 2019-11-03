@@ -1,13 +1,24 @@
-M = main
+.POSIX:
+M = vectors values
 PREC = d
-ALG_CFLGAS = -Wall -Wextra -O0 -g `alg.conf --cflags $(PREC)`
+ALG_CFLAGS = `alg.conf --cflags $(PREC)`
 ALG_LDFLAGS = `alg.conf --libs $(PREC)`
 
-$M: $M.o; $(CC) $< $(LDFLAGS) $(ALG_LDFLAGS) -o $@
-$M.o: $M.c; $(CC) $(CFLGAS) $(ALG_CFLGAS) $< -c -o $@
+LINK = $(CC)
+
+all: $M
+.o:
+	$(LINK) $< $(LDFLAGS) $(ALG_LDFLAGS) -o $@
+
+.c.o:
+	$(CC) $(CFLAGS) $(ALG_CFLAGS) $< -c -o $@
+
+.c:
+%: %.c
 
 test: $M; atest test/*
 install:
+run: $M; @co.run ./main
 
-.PHONY: clean test install
-clean:; rm -f $M.o $M
+.PHONY: clean test install run
+clean:; rm -f $M $(M:=.o)
