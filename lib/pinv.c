@@ -105,7 +105,7 @@ alg_pinv_apply(T * q, real * A, /**/ real * B)
     }
 
     gsl_vector_minmax(S, &smin, &smax);
-    eps = dim * max(abs(smin), abs(smax)) * GSL_DBL_EPSILON;
+    eps = dim * max(fabs(smin), fabs(smax)) * GSL_DBL_EPSILON;
 
     for (i = 0; i < dim; i++) {
         x = gsl_vector_get(S, i);
