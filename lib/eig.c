@@ -53,10 +53,12 @@ alg_eig_values(const real A[6], /**/ real VAL[3])
     gsl_eigen_symmv_sort(val, vec, GSL_EIGEN_SORT_ABS_ASC);
 
     i = 0;
-    VAL[i] = gsl_vector_get(val, i); i++;
-    VAL[i] = gsl_vector_get(val, i); i++;
     VAL[i] = gsl_vector_get(val, i);
-    
+    i++;
+    VAL[i] = gsl_vector_get(val, i);
+    i++;
+    VAL[i] = gsl_vector_get(val, i);
+
     gsl_vector_free(val);
     gsl_matrix_free(vec);
     gsl_eigen_symmv_free(w);

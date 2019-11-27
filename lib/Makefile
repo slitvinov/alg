@@ -1,3 +1,4 @@
+include ../conf.mk
 PREFIX = $(HOME)
 CO_S_CFLAGS = `co.conf --cflags s`
 CO_D_CFLAGS = `co.conf --cflags d`

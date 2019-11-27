@@ -26,6 +26,7 @@ struct T {
     double *y;
     Param params;
 };
+static int env(const char *, real *);
 
 static int Type[] = {
     RK2, RK4, RKF45, RKCK, RK8PD
@@ -71,6 +72,7 @@ ode_ini(int type, int dim, real dt,
 {
     T *q;
     int i, n;
+    real epsabs, epsrel;
     gsl_odeiv2_driver *d;
     gsl_odeiv2_system *sys;
     const gsl_odeiv2_step_type *Stype[99];
@@ -99,7 +101,14 @@ ode_ini(int type, int dim, real dt,
     sys->jacobian = NULL;
     sys->dimension = dim;
     sys->params = p;
-    d = gsl_odeiv2_driver_alloc_y_new(sys, Stype[i], dt, EPSABS, EPSREL);
+    epsabs = EPSABS;
+    epsrel = EPSREL;
+    if (env("EPSABS", &epsabs) != CO_OK)
+        ERR(CO_INDEX, "fail to read EPSABS");
+    if (env("EPSREL", &epsrel) != CO_OK)
+        ERR(CO_INDEX, "fail to read EPSREL");
+    MSG(FMT " " FMT, epsabs, epsrel);
+    d = gsl_odeiv2_driver_alloc_y_new(sys, Stype[i], dt, epsabs, epsrel);
     if (d == NULL)
         ERR(CO_MEMORY, "fail to allocate ode driver");
     q->d = d;
@@ -172,4 +181,15 @@ int
 ode_apply_fixed(T * q, real * ptime, real t, real * x)
 {
     return apply(q, ptime, t, x, step_fixed);
+}
+
+static int
+env(const char *name, real * p)
+{
+    const char *v;
+
+    if ((v = getenv(name)) != NULL)
+        if (sscanf(v, CO_REAL_IN, p) != 1)
+            ERR(CO_IO, "not a number %s=%s", name, v);
+    return CO_OK;
 }
