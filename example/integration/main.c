@@ -12,9 +12,12 @@
 static char me[] = "integration";
 
 static void
-usg() {
-  fprintf(stderr, "%s [-t type] [-a float] [-b float] [-f sin|cos|sq]\n", me);
-  exit(1);
+usg()
+{
+    fprintf(stderr,
+            "%s [-t type] [-a real] [-b real] [-k real] [-f sin|cos|sq]\n",
+            me);
+    exit(1);
 }
 
 static real
@@ -52,7 +55,8 @@ main(int argc, char **argv)
     real a, b, result, k;
     const char *Type;
     const char *Fun;
-    real (*f)(real, void*);
+
+    real(*f) (real, void *);
 
     a = 0;
     b = 1;
@@ -60,55 +64,63 @@ main(int argc, char **argv)
     Type = "gauss15";
     f = fsin;
     while (*++argv != NULL && argv[0][0] == '-') {
-	switch (argv[0][1]) {
-	case 'h':
-	    usg();
-	    break;
-	case 'i':
-	    argv++;
-	    if ((Type = *argv) == NULL) {
-		fprintf(stderr, "%s: -t needs an argument\n", me);
-		exit(2);
-	    }
-	    break;
-	case 'a':
-	    argv++;
-	    if (*argv == NULL) {
+        switch (argv[0][1]) {
+        case 'h':
+            usg();
+            break;
+        case 'i':
+            argv++;
+            if ((Type = *argv) == NULL) {
+                fprintf(stderr, "%s: -t needs an argument\n", me);
+                exit(2);
+            }
+            break;
+        case 'a':
+            argv++;
+            if (*argv == NULL) {
                 fprintf(stderr, "%s: -a needs an argument\n", me);
                 exit(2);
-	    }
-	    a = atof(*argv);
-	    break;
-	case 'b':
-	    argv++;
-	    if (*argv == NULL) {
+            }
+            a = atof(*argv);
+            break;
+        case 'b':
+            argv++;
+            if (*argv == NULL) {
                 fprintf(stderr, "%s: -b needs an argument\n", me);
                 exit(2);
-	    }
-	    b = atof(*argv);
-	    break;
-	case 'f':
-	    argv++;
-	    if ((Fun = *argv) == NULL) {
+            }
+            b = atof(*argv);
+            break;
+        case 'k':
+            argv++;
+            if (*argv == NULL) {
+                fprintf(stderr, "%s: -b needs an argument\n", me);
+                exit(2);
+            }
+            k = atof(*argv);
+            break;
+        case 'f':
+            argv++;
+            if ((Fun = *argv) == NULL) {
                 fprintf(stderr, "%s: -f needs an argument\n", me);
                 exit(2);
-	    }
-	    if (util_eq(Fun, "cos")) {
-		f = *fcos;
-	    } else if (util_eq(Fun, "cos")) {
-		f = *fsin;
-	    } else if (util_eq(Fun, "sq")) {
-		f = *fsq;
-	    }
-	    break;
-	default:
-	    fprintf(stderr, "%s: unknown option '%s'\n", me, argv[0]);
-	    exit(2);
-	}
+            }
+            if (util_eq(Fun, "cos")) {
+                f = *fcos;
+            } else if (util_eq(Fun, "cos")) {
+                f = *fsin;
+            } else if (util_eq(Fun, "sq")) {
+                f = *fsq;
+            }
+            break;
+        default:
+            fprintf(stderr, "%s: unknown option '%s'\n", me, argv[0]);
+            exit(2);
+        }
     }
     status = alg_integration_str2enum(Type, &type);
     if (status != CO_OK)
-	ER("alg_integration_str2enum failed");
+        ER("alg_integration_str2enum failed");
     alg_integration_ini(QAGS, &integ);
     alg_integration_apply(integ, a, b, f, &k, &result);
     printf(FMT "\n", result);
