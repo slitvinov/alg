@@ -16,6 +16,12 @@ alg_special_bessel_J1(real x)
 }
 
 real
+alg_special_bessel_J2(real x)
+{
+    return gsl_sf_bessel_Jn(2, x);
+}
+
+real
 alg_special_bessel_Jn(int n, real x)
 {
     return gsl_sf_bessel_Jn(n, x);
