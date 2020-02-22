@@ -29,16 +29,21 @@ struct T {
 static int env(const char *, real *);
 
 static int Type[] = {
-    RK2, RK4, RKF45, RKCK, RK8PD
+    RK2,
+    RK4,
+    RK8PD,
+    RKCK,
+    RKF45,
 };
 
 #define FILL \
 	do { \
 		i = 0; \
-		Stype[i++] = gsl_odeiv2_step_rk2; \
-		Stype[i++] = gsl_odeiv2_step_rk4; \
-		Stype[i++] = gsl_odeiv2_step_rkf45; \
-		Stype[i++] = gsl_odeiv2_step_rk8pd; \
+		Stype[i++] = gsl_odeiv2_step_rk2;\
+		Stype[i++] = gsl_odeiv2_step_rk4;\
+		Stype[i++] = gsl_odeiv2_step_rk8pd;\
+		Stype[i++] = gsl_odeiv2_step_rkck;\
+		Stype[i++] = gsl_odeiv2_step_rkf45;\
 	} while(0);
 
 static int

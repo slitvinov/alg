@@ -1,7 +1,11 @@
 #define T Ode
 typedef struct T T;
 enum {
-    RK2, RK4, RKF45, RKCK, RK8PD
+    RK2,
+    RK4,
+    RK8PD,
+    RKCK,
+    RKF45,
 };
 int ode_ini(int type, int dim, real dt,
             int (*)(real, const real *, real * dy, void *), void *, T **);
