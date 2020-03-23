@@ -29,7 +29,7 @@ main(void)
     MALLOC(n, &x);
 
     lin_solve_ini(n, &l);
-    lin_solve_apply(l, A, b, x);
+    lin_solve_sym(l, A, b, x);
 
     MSG("n %d", n);
     MSG("m %d", m);

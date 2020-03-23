@@ -1,4 +1,8 @@
-M = main
+M = \
+main\
+sym\
+sym2\
+
 PREC = d
 ALG_CFLGAS = `alg.conf --cflags $(PREC)`
 ALG_LDFLAGS = `alg.conf --libs $(PREC)`
